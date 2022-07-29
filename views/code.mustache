@@ -1,6 +1,20 @@
 <html>
   <body>
+    <div><b>After redirection by the google's authorization sever, we have successfully collect the <mark>code</mark></b></div>
+    <br>
+    <div><b>But first we need to check the <mark>state</mark> params which was carried by the redirect url to make sure it's the "True" response from our request</b></div>
+    <br>
+    <div><b>The <mark>state value hold by our app</mark> is: </b><div>
+    <div>{{appState}}<div>
+    <div><b>The <mark>state value returned by redirection uri</mark> is: </b><div>
+    <div>{{urlState}}<div>
+    <div><b>They are the same. So we can convince ourselves that the <mark>code</mark> value is NOT faked</b><div>
+    <br>
+    <div><b>The <mark>code</mark> is as following: </b></div>
     <div>{{code}}</div>
-    <a href="/token">Exchange code for tokens</a>
+    <br>
+    <div><b>Now we can exchange the <mark>code</mark> for <mark>id_token</mark> and <mark>access_token</mark> by clicking the button below: </b></div>
+    <div><button onclick="window.location.href='/token';">Exchange code for tokens</button><div>
+    <div>Note: You can observe what the button (router) does <a src={applink}>here</a></div>
   </body>
 </html>

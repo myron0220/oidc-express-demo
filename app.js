@@ -4,23 +4,46 @@
   Date: Jul 28, 2022
 */
 
-const mustacheExpress = require('mustache-express')
-const express = require('express')
-const jwt_decode = require('jwt-decode');
+/* ------------ Libraries ------------ */
+const express = require('express') // node.js express
+const mustacheExpress = require('mustache-express') // show dynamic html view
+const jwt_decode = require('jwt-decode'); // jwt decoder for decoding id_token
+const randomStr = require('./funcs/randomStr')
+const fs = require('fs'); // for reading json file
 
-const app = express()
+/* ------------ INPUT ------------ */
+let fileName = '[Change this to your own json key distributed by Google]'
+if (fileName == '[Change this to your own json key distributed by Google]') {
+  throw "Please change the fileName first! More info: https://developers.google.com/identity/protocols/oauth2/openid-connect#getcredentials"
+}
+let clientInfStr = fs.readFileSync(fileName).toString("utf-8")
+
+/* ------------ Configuration ------------ */
+let clientInfJson = JSON.parse(clientInfStr)
+// console.log(clientInfJson.web)
 const port = 3000
-const client_id = '1032254166654-13ah1po3rnf4cgcee13bmduks7iv53g9.apps.googleusercontent.com'
-const client_secret = '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'
-const redirect_uri = 'http://localhost:3000/code'
 const scope = 'openid profile address email phone'
+const client_id = clientInfJson.web.client_id
+const client_secret = clientInfJson.web.client_secret
+const redirect_uri = clientInfJson.web.redirect_uris[0]
+
+/* ------------ Global Variables ------------ */
+let state
+let nonce
+
+/* ------------ App Routers ------------ */
+const app = express()
 
 app.engine('mustache', mustacheExpress())
 app.set('view engine', 'mustache')
 app.set('views', __dirname + '/views')
 
 app.get('/', (req, res) => {
-  res.render('index.mustache')
+  state = randomStr(12)
+  // console.log("State: " + state)
+  nonce = randomStr(12)
+  // console.log("nonce: " + nonce)
+  res.render('index.mustache', {'state': state, 'nonce': nonce})
 })
 
 app.get('/login', (req, res) => {
@@ -30,18 +53,18 @@ app.get('/login', (req, res) => {
   + '&scope=' + scope
   + '&response_type=code'
   + '&response_mode=query'
-  + '&state=6oawgkr4zyn'
-  + '&nonce=v0szchoal3')
+  + '&state=' + state
+  + '&nonce=' + nonce)
 })
 
 /*
-Then redirect URL will carry a query params as following [Sample redirect URL]:
-http://localhost:3000/private
- ?state=6oawgkr4zyn
- &code=4%2F0AdQt8qiwTYtAJmDSBbWK7eRGOHVezS3CWWfPFLGOmtTDpbCHCw1hh7UCVYwNosAvo50ujw
- &scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email
- &authuser=0
- &prompt=consent
+Sample redirect URL returned by Google's authorization server:
+  http://localhost:3000/private
+  ?state=6oawgkr4zyn
+  &code=4%2F0AdQt8qiwTYtAJmDSBbWK7eRGOHVezS3CWWfPFLGOmtTDpbCHCw1hh7UCVYwNosAvo50ujw
+  &scope=email+profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email
+  &authuser=0
+  &prompt=consent
 */
 
 {
@@ -49,7 +72,7 @@ http://localhost:3000/private
 
   app.get('/code', (req, res) => {
     temp_code = req.query.code
-    res.render('code.mustache', {'code': temp_code})
+    res.render('code.mustache', {'code': temp_code, 'appState': state, 'urlState': req.query.state})
   })
   
   app.get('/token', (req, res) => {
@@ -68,12 +91,16 @@ http://localhost:3000/private
     }).then(response => response.json()) // json(): JSON string -> JSON object
       .then(responseJson => {
         idTokenJson = jwt_decode(responseJson.id_token) // jwt_decode: string -> JSON object
-        res.render('token.mustache', {'name': idTokenJson.name, 'email': idTokenJson.email, 'picture': idTokenJson.picture, 'access_token': responseJson.access_token})
+        res.render('token.mustache', {'idTokenJson': JSON.stringify(idTokenJson),
+          'name': idTokenJson.name, 'email': idTokenJson.email, 'picture': idTokenJson.picture, 'access_token': responseJson.access_token, 
+          'id_token': responseJson.id_token, 'appNonce': nonce, 'jwtNonce': idTokenJson.nonce})
       });
   })
 }
                   
 app.listen(port, () => {
-  console.log(`App running in: http://localhost:${port}/`)
+  console.log(`App running in: ${clientInfJson.web.redirect_uris[0]}`)
 })
+
+
 

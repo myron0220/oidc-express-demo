@@ -1,5 +1,24 @@
 <html>
   <body>
-    <div><a href="/login">Login with Google</a></div>
+    <div><b>Author: </b>Mingzhe Wang, Date: Jul 29, 2022</div>
+    <div><b>Email: </b>wxyz0daniu@gmail.com</div>
+    <br>
+    <div><b>This web app demo will show the entire <mark>authorization code flow</mark></b></div>
+    <div><b></b>(Note: I avoid use any complex frontend design and third-party library to show how things work in OIDC)</div>
+    <div>(You can find all the code <a href={{githubmainlink}}>here)</a></div>
+    <br>
+    <div><b>Now, let's begin!</b></div>
+    <br>
+    <div><b>First we should generate <mark>state</mark> and <mark>nouce</mark> as two random string of length 12</b></div>
+    <br>
+    <div><b>The <mark>state</mark> is an optional value that is carried through the whole flow and returned to the client: </b></div>
+    <div>{{state}}</div>
+    <br>
+    <div><b>A <mark>nonce (or number used once)</mark> is a random value that is used to prevent replay attacks.</b></div>
+    <div>{{nonce}}</div>
+    <br>
+    <div><b>We then can start login by clicking the button below: </b></div>
+    <div><button onclick="window.location.href='/login';">Login with Google</button><div>
+    <div>Note: You can observe what the button (router) does <a src={applink}>here</a></div>
   </body>
 </html>

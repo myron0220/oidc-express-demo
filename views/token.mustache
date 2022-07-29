@@ -1,11 +1,34 @@
 <html>
   <body>
-    <div><b>User information via id_token</b></div>
-    <div>{{name}}</div>
-    <div>{{email}}</div>
+    <div><b>Now we have collected the <mark>id_token</mark> and <mark>access_token</mark> by exchanging the <mark>code</mark></b></div>
+    <br>
+    <div><b><mark>id_token</mark> is the following: </b><div>
+    <div>{{id_token}}</div>
+    <div><b><mark>access_token</mark> is the following: </b><div>
+    <div>{{access_token}}</div>
+    <br>
+    <div><b>Since <mark>id_token</mark> is transmitted using JWT format, we first need to decode it using JWT decoder.</b><div>
+    <br>
+    <div><b>After JWT decoding, the body of the <mark>id_token</mark> is the following: </b><div>
+    <div>{{idTokenJson}}</div>
+    <br>
+    <div><b>Before we do somethings, let's again check the <mark>nonce</mark> value to avoid replay attacks.</b></div>
+    <br>
+    <div><b>The <mark>nonce value hold by our app</mark> is: </b><div>
+    <div>{{appNonce}}<div>
+    <div><b>The <mark>nonce value carried in the JWT String</mark> is: </b><div>
+    <div>{{jwtNonce}}<div>
+    <div><b>They are the same. So we can convince ourselves that the <mark>id_token</mark> and <mark>access_token</mark> value is NOT faked</b><div>
+    <br>
+    <div><b>Using <mark>decoded id_token body</mark>, we can collect the following <mark>user information</mark>: </b></div>
+    <div>Name: {{name}}</div>
+    <div>Email: {{email}}</div>
+    <div>Profile image: </div>
     <div><img src="{{picture}}"></img></div>
     <br>
-    <div><b>Access_token that can be sent to a Google API</b></div>
-    <div>{{access_token}}</div>
+    <div><b>Using <mark>access_token</mark>, we can call <mark>Google APIs</mark></b></div>
+    <div>`[To save time, the calling process is not displayed here]`</div>
+    <br>
+    <div><b>End : )</b></div>
   </body>
 </html>
