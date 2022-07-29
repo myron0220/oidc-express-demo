@@ -26,6 +26,8 @@ const scope = 'openid profile address email phone'
 const client_id = clientInfJson.web.client_id
 const client_secret = clientInfJson.web.client_secret
 const redirect_uri = clientInfJson.web.redirect_uris[0]
+const githubmainlink = 'https://github.com/myron0220/oidc-express-demo'
+const applink = 'https://github.com/myron0220/oidc-express-demo/blob/main/app.js'
 
 /* ------------ Global Variables ------------ */
 let state
@@ -43,7 +45,12 @@ app.get('/', (req, res) => {
   // console.log("State: " + state)
   nonce = randomStr(12)
   // console.log("nonce: " + nonce)
-  res.render('index.mustache', {'state': state, 'nonce': nonce})
+  res.render('index.mustache', {
+    'state': state, 
+    'nonce': nonce, 
+    'githubmainlink': githubmainlink,
+    'applink': applink
+  })
 })
 
 app.get('/login', (req, res) => {
@@ -72,7 +79,12 @@ Sample redirect URL returned by Google's authorization server:
 
   app.get('/code', (req, res) => {
     temp_code = req.query.code
-    res.render('code.mustache', {'code': temp_code, 'appState': state, 'urlState': req.query.state})
+    res.render('code.mustache', {
+      'code': temp_code, 
+      'appState': state, 
+      'urlState': req.query.state,
+      'applink': applink
+    })
   })
   
   app.get('/token', (req, res) => {
