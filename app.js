@@ -10,6 +10,7 @@ const mustacheExpress = require('mustache-express') // show dynamic html view
 const jwt_decode = require('jwt-decode'); // jwt decoder for decoding id_token
 const randomStr = require('./funcs/randomStr')
 const fs = require('fs'); // for reading json file
+const fetch = require('node-fetch')
 
 /* ------------ INPUT ------------ */
 let fileName = '[Change this to your own json key distributed by Google]'
@@ -46,8 +47,8 @@ app.get('/', (req, res) => {
   nonce = randomStr(12)
   // console.log("nonce: " + nonce)
   res.render('index.mustache', {
-    'state': state, 
-    'nonce': nonce, 
+    'state': state,
+    'nonce': nonce,
     'githubmainlink': githubmainlink,
     'applink': applink
   })
@@ -55,13 +56,13 @@ app.get('/', (req, res) => {
 
 app.get('/login', (req, res) => {
   res.redirect('https://accounts.google.com/o/oauth2/v2/auth'
-  + '?client_id=' + client_id
-  + '&redirect_uri=' + redirect_uri
-  + '&scope=' + scope
-  + '&response_type=code'
-  + '&response_mode=query'
-  + '&state=' + state
-  + '&nonce=' + nonce)
+    + '?client_id=' + client_id
+    + '&redirect_uri=' + redirect_uri
+    + '&scope=' + scope
+    + '&response_type=code'
+    + '&response_mode=query'
+    + '&state=' + state
+    + '&nonce=' + nonce)
 })
 
 /*
@@ -80,19 +81,19 @@ Sample redirect URL returned by Google's authorization server:
   app.get('/code', (req, res) => {
     temp_code = req.query.code
     res.render('code.mustache', {
-      'code': temp_code, 
-      'appState': state, 
+      'code': temp_code,
+      'appState': state,
       'urlState': req.query.state,
       'applink': applink
     })
   })
-  
+
   app.get('/token', (req, res) => {
     fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      },    
+      },
       body: new URLSearchParams({
         'grant_type': 'authorization_code',
         'code': temp_code,
@@ -103,16 +104,15 @@ Sample redirect URL returned by Google's authorization server:
     }).then(response => response.json()) // json(): JSON string -> JSON object
       .then(responseJson => {
         idTokenJson = jwt_decode(responseJson.id_token) // jwt_decode: string -> JSON object
-        res.render('token.mustache', {'idTokenJson': JSON.stringify(idTokenJson),
-          'name': idTokenJson.name, 'email': idTokenJson.email, 'picture': idTokenJson.picture, 'access_token': responseJson.access_token, 
-          'id_token': responseJson.id_token, 'appNonce': nonce, 'jwtNonce': idTokenJson.nonce})
+        res.render('token.mustache', {
+          'idTokenJson': JSON.stringify(idTokenJson),
+          'name': idTokenJson.name, 'email': idTokenJson.email, 'picture': idTokenJson.picture, 'access_token': responseJson.access_token,
+          'id_token': responseJson.id_token, 'appNonce': nonce, 'jwtNonce': idTokenJson.nonce
+        })
       });
   })
 }
-                  
+
 app.listen(port, () => {
-  console.log(`App running in: ${clientInfJson.web.redirect_uris[0]}`)
+  console.log(`App running in: ${clientInfJson.web.redirect_uris[0].slice(0, -'/code'.length)}`)
 })
-
-
-
