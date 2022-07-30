@@ -2,7 +2,7 @@
  This is a simple demo which shows how to implement oidc in a server-side web (via Express) w/o using any third-party library.
 
 # A live demo
- see https://oidc-express-demo.myron0220.repl.co for a live demo
+ See https://oidc-express-demo.myron0220.repl.co for a live demo
  
 # Installation
  To deploy this website on your own server.
