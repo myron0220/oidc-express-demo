@@ -12,6 +12,7 @@
    ```
  - Get your OIDC credential file from Google by following  
    https://developers.google.com/identity/protocols/oauth2/openid-connect#getcredentials  
+   The first entry of your redirect_uris should be ```https://[YOUR HOST NAME]/code```
  - Put your ".json" credential file into current project folder.
  - Change ```let fileName = '[Change this to your own json key distributed by Google]'``` to you ".json" credential file name.
  - ```
